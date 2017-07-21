@@ -12,9 +12,7 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Created by Alexandru.Bottea on 7/20/2017.
- */
+
 public class ControllerScanner implements ComponentScanner {
 
     private String[] packages;
@@ -68,7 +66,7 @@ public class ControllerScanner implements ComponentScanner {
     }
 
     @Override
-    public MethodAttributes getMetaData(String uri, HttpMethod httpMethod) {
+    public MethodAttributes getMethodMetaData(String uri, HttpMethod httpMethod) {
         return ALLOWED_METHODS.get(new BeanKey(uri, httpMethod));
     }
 }

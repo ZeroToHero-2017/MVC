@@ -66,7 +66,7 @@ public class ControllerScanner implements ComponentScanner {
     }
 
     @Override
-    public MethodAttributes getMetaData(String uri, HttpMethod httpMethod) {
+    public MethodAttributes getMethodMetaData(String uri, HttpMethod httpMethod) {
         return ALLOWED_METHODS.get(new BeanKey(uri, httpMethod));
     }
 }

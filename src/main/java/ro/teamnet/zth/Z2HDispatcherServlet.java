@@ -10,9 +10,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class Z2HDispatcherServlet extends HttpServlet {
+    private ControllerScanner controllerScanner;
 
     @Override
     public void init() throws ServletException {
+        controllerScanner=new ControllerScanner("ro.teamnet.zth.appl.controller");
+        controllerScanner.scan();
     }
 
     @Override
@@ -53,10 +56,12 @@ public class Z2HDispatcherServlet extends HttpServlet {
     }
 
     private void reply(HttpServletResponse resp, Object resultToDisplay) {
-
+        // todo serialize the output(resultToDisplay = controllerinstance.invokeMethod(parameters) )into JSON
+        // todo using ObjectMapper (jackson)
     }
 
     private Object dispatch(HttpServletRequest req, HttpMethod methodType) {
+        //todo to invoke the controller method for the current request and return the controller output
         return null;
     }
 

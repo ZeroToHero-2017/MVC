@@ -85,8 +85,9 @@ public class MyDispatcherServlet extends HttpServlet {
         try {
             Class myClass = Class.forName(method.getControllerClass());
             Object executionInstance = myClass.newInstance();
-            executionInstance.getClass().getDeclaredMethod(method.getMethodName()).setAccessible(true);
-            toReturn = executionInstance.getClass().getDeclaredMethod(method.getMethodName()).invoke(executionInstance);
+            Method toExec = executionInstance.getClass().getDeclaredMethod(method.getMethodName());
+            toExec.setAccessible(true);
+            toReturn = toExec.invoke(executionInstance);
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {

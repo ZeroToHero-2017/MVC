@@ -18,6 +18,8 @@ public class ControllerScanner implements ComponentScanner {
     private String[] packages;
     private static Map<BeanKey, MethodAttributes> ALLOWED_METHODS = new ConcurrentHashMap<>();
 
+    private static Map<Class, Object> CONTROLLERS=new ConcurrentHashMap<>();
+
 
     public ControllerScanner(String... packages) {
         this.packages = packages;
@@ -68,5 +70,22 @@ public class ControllerScanner implements ComponentScanner {
     @Override
     public MethodAttributes getMethodMetaData(String uri, HttpMethod httpMethod) {
         return ALLOWED_METHODS.get(new BeanKey(uri, httpMethod));
+    }
+
+    @Override
+    public Object getInstance(String uri, HttpMethod httpMethod) {
+        MethodAttributes methodMetaData = getMethodMetaData(uri, httpMethod);
+        Class controllerClass = methodMetaData.getControllerClass();
+        if(CONTROLLERS.containsKey(controllerClass)){
+            return CONTROLLERS.get(controllerClass);
+        }else{
+            try {
+                Object controllerInstance=controllerClass.newInstance();
+                CONTROLLERS.put(controllerClass,controllerInstance);
+                return controllerInstance;
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }

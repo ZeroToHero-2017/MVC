@@ -19,5 +19,7 @@ public interface ComponentScanner {
         return null;
     }
 
+    Object getInstance(String uri,HttpMethod httpMethod);
+
 
 }

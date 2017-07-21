@@ -79,7 +79,7 @@
                 <artifactId>tomcat7-maven-plugin</artifactId>
                 <version>2.2</version>
                 <configuration>
-                    <url>http://192.168.99.100:49100/manager/text</url>
+                    <url>http://localhost:49100/manager/text</url>
                     <username>admin</username>
                     <password>admin</password>
                     <port>9090</port>

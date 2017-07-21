@@ -1,6 +1,10 @@
 package ro.teamnet.zth;
 
+import org.codehaus.jackson.map.ObjectMapper;
+import ro.teamnet.zth.fmk.MethodAttributes;
 import ro.teamnet.zth.fmk.domain.HttpMethod;
+import ro.teamnet.zth.utils.BeanDeserializator;
+import ro.teamnet.zth.utils.ComponentScanner;
 import ro.teamnet.zth.utils.ControllerScanner;
 
 import javax.servlet.ServletException;
@@ -8,9 +12,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.List;
 
 public class Z2HDispatcherServlet extends HttpServlet {
-    private ControllerScanner controllerScanner;
+    private ComponentScanner controllerScanner;
+
 
     @Override
     public void init() throws ServletException {
@@ -46,7 +54,7 @@ public class Z2HDispatcherServlet extends HttpServlet {
             try {
                 sendExceptionError(e, resp);
             } catch (IOException ioe) {
-                ioe.printStackTrace();
+                throw new RuntimeException(ioe);
             }
         }
     }
@@ -56,13 +64,29 @@ public class Z2HDispatcherServlet extends HttpServlet {
     }
 
     private void reply(HttpServletResponse resp, Object resultToDisplay) {
-        // todo serialize the output(resultToDisplay = controllerinstance.invokeMethod(parameters) )into JSON
-        // todo using ObjectMapper (jackson)
+        ObjectMapper objectMapper = new ObjectMapper();
+        final String responseAsString;
+        try {
+            responseAsString = objectMapper.writeValueAsString(resultToDisplay);
+            resp.getWriter().print(responseAsString);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     private Object dispatch(HttpServletRequest req, HttpMethod methodType) {
-        //todo to invoke the controller method for the current request and return the controller output
-        return null;
+        String reqUrlPath=req.getPathInfo();
+        Object controllerInstance=controllerScanner.getInstance(reqUrlPath,methodType);
+        Method method=controllerScanner.getMethodMetaData(reqUrlPath,methodType).getMethod();
+        List<Object> params= BeanDeserializator.getMethodParams(method,req);
+        Object  ret;
+        try {
+            ret = method.invoke(controllerInstance,params.toArray());
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+        return ret;
     }
 
 
